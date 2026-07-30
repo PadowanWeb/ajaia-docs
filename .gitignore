@@ -31,7 +31,27 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
-.env*
+.env
+.env*.local
+
+# local sqlite database
+/prisma/*.db
+/prisma/*.db-journal
+*.db
+*.db-journal
+!prisma/seeded.db
+
+# deploy artifacts
+deploy.zip
+.deploy/
+
+# walkthrough working files (keep public MP4 + scripts)
+walkthrough/*.webm
+walkthrough/*.wav
+walkthrough/*.mp3
+walkthrough/neural-out/
+walkthrough/*.mp4
+!public/walkthrough/
 
 # vercel
 .vercel
@@ -39,3 +59,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/src/generated/prisma

@@ -1,0 +1,31 @@
+﻿Hi. This is a short walkthrough of Ajaia Docs, a lightweight collaborative document editor I built for the Ajaia A I native full stack assignment.
+
+The goal was not to recreate Google Docs completely. It was to ship the strongest working product slice I could under a tight timebox: create and edit rich text, import a file, share with another user, and keep everything persistent after refresh.
+
+I'm on the live deployment at ajaia docs on Azure. I'll sign in as Alice, one of three seeded demo accounts. The password for all demo users is demo one two three four.
+
+From Alice's dashboard, you can clearly see documents owned by you versus documents shared with you. That owned versus shared distinction was an explicit product requirement, so I made it visible in the list U I.
+
+I'll open the welcome document. The Tip Tap editor supports bold, italic, underline, heading levels, and bullet or numbered lists. Edits auto save after a short pause, and there is also a manual save action for confidence.
+
+Watch me rename the title, apply formatting, and then reload the page. The formatting and title remain, which demonstrates persistence of structure, not just plain text.
+
+Next is file upload. I deliberately support only .txt and .md files, with a one megabyte limit. That constraint is stated in the product U I and the read me, so reviewers are never surprised.
+
+I'll import the sample sprint notes markdown file. Ajaia Docs turns that file into a new editable document, including light mapping for headings and lists.
+
+Now sharing. Alice is the owner, so she can grant access. I'll share this imported document with Bob as an editor. Viewers can read only; editors can write. Only owners can manage sharing.
+
+I'll sign out, then sign in as Bob. The document appears under shared with me, labeled as shared, and Bob can continue editing.
+
+If I signed in as Charlie instead, Alice's private notes would not be accessible. That access denial is intentional and demoable.
+
+Here is what I deprioritized on purpose: real time multiplayer cursors, comments, suggestion mode, version history, and Office or P D F export. Those are attractive, but they would have diluted the core path.
+
+With another two to four hours, I would add presence indicators, markdown export, and stronger hosted database hardening. I would not restart with a broader feature set before those fundamentals.
+
+On the engineering side, the stack is Next J S, Tip Tap for rich text, Prisma with SQ Lite for persistence, and J W T cookie sessions for lightweight multi user auth. There is automated coverage for access rules and import helpers, plus basic validation throughout the A P Is.
+
+Because this is an A I forward role, briefly: I used Cursor to accelerate scaffolding, Tip Tap setup, and documentation drafts. I rejected A I suggestions that pushed real time sync and heavy auth too early. I verified correctness myself through tests, manual Alice Bob Charlie flows, and the live Azure site.
+
+That is Ajaia Docs: a focused collaborative editor slice, deployed and ready for review.

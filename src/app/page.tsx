@@ -1,65 +1,75 @@
-import Image from "next/image";
+import { DashboardActions } from "@/components/DashboardActions";
+import { DocumentTable } from "@/components/DocumentTable";
+import { LogoutButton } from "@/components/LogoutButton";
+import { getSessionUser } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
 
-export default function Home() {
+export default async function HomePage() {
+  const user = await getSessionUser();
+  if (!user) redirect("/login");
+
+  const owned = await prisma.document.findMany({
+    where: { ownerId: user.id },
+    include: {
+      owner: { select: { name: true, email: true } },
+      shares: true,
+    },
+    orderBy: { updatedAt: "desc" },
+  });
+
+  const shared = await prisma.document.findMany({
+    where: { shares: { some: { userId: user.id } } },
+    include: {
+      owner: { select: { name: true, email: true } },
+      shares: { where: { userId: user.id }, select: { role: true } },
+    },
+    orderBy: { updatedAt: "desc" },
+  });
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8">
+      <header className="mb-8 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-teal-800">Ajaia Docs</p>
+          <h1 className="mt-1 text-3xl font-semibold text-slate-900">Your documents</h1>
+          <p className="mt-1 text-sm text-slate-600">
+            Signed in as <span className="font-medium text-slate-800">{user.name}</span> ({user.email})
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+        <LogoutButton />
+      </header>
+
+      <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <DashboardActions />
+      </div>
+
+      <div className="space-y-10">
+        <DocumentTable
+          title="Owned by you"
+          empty="No owned documents yet. Create one or import a file."
+          documents={owned.map((doc) => ({
+            id: doc.id,
+            title: doc.title,
+            updatedAt: doc.updatedAt.toISOString(),
+            owner: doc.owner,
+            access: "owner" as const,
+            shareCount: doc.shares.length,
+          }))}
+        />
+        <DocumentTable
+          title="Shared with you"
+          empty="Nothing shared with you yet. Ask Alice to share a doc, or log in as Bob."
+          showOwner
+          documents={shared.map((doc) => ({
+            id: doc.id,
+            title: doc.title,
+            updatedAt: doc.updatedAt.toISOString(),
+            owner: doc.owner,
+            access: (doc.shares[0]?.role === "viewer" ? "viewer" : "editor") as "editor" | "viewer",
+          }))}
+        />
+      </div>
+    </main>
   );
 }
