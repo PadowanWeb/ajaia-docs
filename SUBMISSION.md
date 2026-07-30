@@ -17,6 +17,7 @@
 |------|-------|
 | Live product URL | https://ajaia-docs.azurewebsites.net |
 | Walkthrough video | Local MP4 at `walkthrough/Ajaia-Docs-Walkthrough.mp4` — upload unlisted and paste URL in `WALKTHROUGH_URL.txt` |
+| GitHub repo | https://github.com/PadowanWeb/ajaia-docs |
 | Google Drive folder | _TODO_ |
 
 ## Reviewer credentials

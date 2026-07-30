@@ -10,6 +10,10 @@ Users can create and rename documents, edit rich text in the browser, import `.t
 
 Deployed on Azure App Service (`ajaia-docs` / `ajaia-docs-rg`, West Europe).
 
+## Source repository
+
+**https://github.com/PadowanWeb/ajaia-docs**
+
 ## Seeded demo accounts
 
 | Email | Password | Notes |
